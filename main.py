@@ -86,7 +86,7 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
-        @dp.message(Command("start"))
+@dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     name = message.from_user.first_name or "Гость"
     await message.answer(
