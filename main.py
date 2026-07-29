@@ -1,7 +1,8 @@
+# комментарии чисто для себя :)
 import subprocess
 import sys
 
-# Устанавливаем aiogram прямо здесь
+# Установка aiogram
 subprocess.check_call([
     sys.executable, "-m", "pip", "install",
     "aiogram==3.4.1",
@@ -9,7 +10,7 @@ subprocess.check_call([
     "aiohttp==3.9.1"
 ])
 
-# Теперь импортируем
+# Теперь импортируем библиотеки
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
@@ -33,9 +34,7 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-# ==================== КЛАВИАТУРЫ ====================
-
-# 1. Главное меню (Reply-клавиатура, заменяет поле ввода)
+# 1. Главное меню
 main_menu_kb = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🔐 Подключить VPN")],
@@ -47,7 +46,7 @@ main_menu_kb = ReplyKeyboardMarkup(
     one_time_keyboard=False  # Не скрывать после нажатия
 )
 
-# 2. Меню выбора тарифа (Inline-кнопки под сообщением)
+# 2. Меню выбора 
 tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="🌍 Базовый - 1 месяц", callback_data="tariff_base"),
@@ -87,11 +86,11 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
-# ==================== ОБРАБОТЧИКИ КОМАНД ====================
-
-@dp.message(Command("start"))
+        @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
+    name = message.from_user.first_name or "Гость"
     await message.answer(
+        f"👋 Привет, {name} ! Добро пожаловать!"
         "🔒 <b>Ваша приватность — наш приоритет.</b>\n\n"
         "Этот бот предоставляет качественный VPN-доступ в один клик.\n"
         "Мы не храним логи, а наши серверы находятся по всему миру.\n\n"
@@ -133,14 +132,14 @@ async def cmd_podpiska(message: types.Message):
     # Пример ответа с информацией о подписке
     await message.answer(
         "📊 <b>Статус подписки</b>\n\n"
-        "✅ У вас активна подписка <b>балда</b>\n"
-        "📅 Действует до: <b>31.12.2026</b>\n"
-        "📈 Осталось дней: <b>157</b>\n\n"
+        "✅ У вас активна подписка: <bНеактивна></b>\n"
+        "📅 Действует до: <b>Неактивна</b>\n"
+        "📈 Осталось дней: <b>0</b>\n\n"
         "Хотите продлить или сменить тариф?",
         reply_markup=tariffs_kb
     )
 
-# Обработка текстовых кнопок (Reply-клавиатура)
+# Обработка текстовых кнопок
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
     await cmd_VPN(message)
@@ -157,14 +156,12 @@ async def subscription_button(message: types.Message):
 async def help_button(message: types.Message):
     await cmd_help(message)
 
-# ==================== ОБРАБОТЧИКИ INLINE-КНОПОК (Callback) ====================
-
 @dp.callback_query(lambda c: c.data == "tariff_base")
 async def tariff_base(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Базовый")
     await callback.message.edit_text(
         "🌍 <b>Тариф Базовый</b>\n\n"
-        "💰 Цена: <b>299 ₽/мес</b>\n"
+        "💰 Цена: <b>--- ₽/мес</b>\n"
         "📊 Скорость: до <b>50 Мбит/с</b>\n"
         "🌐 Серверов: <b>5</b>\n"
         "📱 Устройств: <b>2</b>\n\n"
@@ -177,7 +174,7 @@ async def tariff_premium(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Премиум")
     await callback.message.edit_text(
         "🚀 <b>Тариф Премиум</b>\n\n"
-        "💰 Цена: <b>799 ₽/3 мес</b>\n"
+        "💰 Цена: <b>--- ₽/3 мес</b>\n"
         "📊 Скорость: до <b>200 Мбит/с</b>\n"
         "🌐 Серверов: <b>15</b>\n"
         "📱 Устройств: <b>5</b>\n\n"
@@ -190,7 +187,7 @@ async def tariff_unlimited(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Безлимит")
     await callback.message.edit_text(
         "💎 <b>Тариф Безлимит</b>\n\n"
-        "💰 Цена: <b>1999 ₽/год</b>\n"
+        "💰 Цена: <b>--- ₽/год</b>\n"
         "📊 Скорость: до <b>500 Мбит/с</b>\n"
         "🌐 Серверов: <b>30+</b>\n"
         "📱 Устройств: <b>10</b>\n"
@@ -214,7 +211,7 @@ async def pay_card(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💳 <b>Оплата банковской картой</b>\n\n"
         "Для оплаты перейдите по ссылке:\n"
-        "🔗 <a href='https://example.com/pay'>Оплатить сейчас</a>\n\n"
+        "🔗 <a href='скоро тут будет ссылка'>Оплатить сейчас</a>\n\n"
         "После оплаты настройки придут автоматически."
     )
 
@@ -228,7 +225,7 @@ async def pay_crypto(callback: types.CallbackQuery):
         "• ETH (Ethereum)\n"
         "• USDT (TRC20)\n\n"
         "Для получения реквизитов нажмите:\n"
-        "🔗 <a href='https://example.com/crypto'>Получить реквизиты</a>"
+        "🔗 <a href='скоро тут что-то будет'>Получить реквизиты</a>"
     )
 
 @dp.callback_query(lambda c: c.data == "pay_phone")
@@ -248,7 +245,7 @@ async def support_write(callback: types.CallbackQuery):
         "📝 <b>Техническая поддержка</b>\n\n"
         "Опишите вашу проблему одним сообщением.\n"
         "Мы ответим в ближайшее время (до нескольких часов).\n\n"
-        "⏱ <i>Среднее время ответа: 2-4 часа</i>"
+        "⏱ <i>Среднее время ответа: 7 дней и 8 ночей (шутка, ответим сразу)</i>"
     )
 
 @dp.callback_query(lambda c: c.data == "faq")
