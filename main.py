@@ -56,11 +56,11 @@ async def roulette_button(message: types.Message):
 # 2. Меню выбора 
 tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
-        InlineKeyboardButton(text="🌍 Базовый - 1 месяц", callback_data="tariff_base"),
-        InlineKeyboardButton(text="🚀 Премиум - 3 месяца", callback_data="tariff_premium")
+        InlineKeyboardButton(text="🌍 1 месяц", callback_data="tariff_base"),
+        InlineKeyboardButton(text="🚀 3 месяца", callback_data="tariff_premium")
     ],
     [
-        InlineKeyboardButton(text="💎 Безлимит - 12 месяцев", callback_data="tariff_unlimited"),
+        InlineKeyboardButton(text="💎 12 месяцев", callback_data="tariff_unlimited"),
         InlineKeyboardButton(text="🎁 Промокод", callback_data="promo")
     ],
     [
@@ -97,8 +97,8 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
 async def cmd_start(message: types.Message):
     name = message.from_user.first_name or "Гость"
     await message.answer(
-        f"👋 Привет, {name} ! Добро пожаловать!"
-        "🔒 <b>Ваша приватность — наш приоритет.</b>\n\n"
+        f"👋 Привет, {name} ! "
+        "🔒 <b>Ваша приватность - наш приоритет.</b>\n\n"
         "Этот бот предоставляет качественный VPN-доступ в один клик.\n"
         "Мы не храним логи, а наши серверы находятся по всему миру.\n\n"
         "🎯 <b>Чтобы начать:</b>\n"
@@ -138,10 +138,10 @@ async def cmd_PAY(message: types.Message):
 async def cmd_podpiska(message: types.Message):
     # Пример ответа с информацией о подписке
     await message.answer(
-        "📊 <b>Статус подписки</b>\n\n"
-        "✅ У вас активна подписка: <bНеактивна></b>\n"
-        "📅 Действует до: <b>Неактивна</b>\n"
-        "📈 Осталось дней: <b>0</b>\n\n"
+        "📊 <b>Статус подписки\n\n"
+        "✅ У вас активна подписка: \n"
+        "📅 Действует до: Неактивна\n"
+        "📈 Осталось дней: \n\n"
         "Хотите продлить или сменить тариф?",
         reply_markup=tariffs_kb
     )
