@@ -1,12 +1,4 @@
-# Импорты для рулетки
-from roulette import (
-    cmd_roulette,
-    spin_roulette_callback,
-    roulette_stats,
-    can_spin,
-    spin_roulette,
-    roulette_kb
-)
+
 # комментарии чисто для себя :)
 import subprocess
 import sys
