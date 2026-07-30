@@ -44,7 +44,7 @@ main_menu_kb = ReplyKeyboardMarkup(
         [KeyboardButton(text="🎰 Рулетка")],  # ← Новая кнопка
         [KeyboardButton(text="❓ Помощь")]
     ],
-    resize_keyboard=True
+    resize_keyboard=True,
     one_time_keyboard=False  # Не скрывать после нажатия
 )
 
