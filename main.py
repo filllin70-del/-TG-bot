@@ -102,6 +102,7 @@ async def cmd_start(message: types.Message):
         "🎯 <b>Чтобы начать:</b>\n"
         "Просто выберите тариф в меню ниже и оплатите подписку.\n"
         "Готовые настройки придут вам сразу после оплаты.\n\n"
+        "Крути рулетку и получи ВПН БЕСПЛАТНО 🙂\n\n"
         "Приятного серфинга! 🌊",
         reply_markup=main_menu_kb  # Добавляем главное меню
     )
@@ -295,7 +296,6 @@ async def spin_roulette_callback(callback: types.CallbackQuery):
     user_id = callback.from_user.id
     user_name = callback.from_user.first_name or "Игрок"
     
-    # ... проверки ...
     
     # 🎰 Эффект "вращения" — отправляем промежуточные сообщения
     spin_frames = [
@@ -320,10 +320,8 @@ async def spin_roulette_callback(callback: types.CallbackQuery):
     
     await asyncio.sleep(0.5)
     
-    # Получаем результат
     result = spin_roulette()
     
-    # ... обработка результата ...
 
 async def main():
     print("🚀 Бот запущен!")
