@@ -140,7 +140,7 @@ async def cmd_podpiska(message: types.Message):
     await message.answer(
         "📊 <b>Статус подписки\n\n"
         "✅ У вас активна подписка: \n"
-        "📅 Действует до: Неактивна\n"
+        "📅 Действует до: \n"
         "📈 Осталось дней: \n\n"
         "Хотите продлить или сменить тариф?",
         reply_markup=tariffs_kb
