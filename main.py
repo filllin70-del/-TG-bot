@@ -35,16 +35,23 @@ bot = Bot(
 dp = Dispatcher()
 
 # 1. Главное меню
+# В main_menu_kb добавить кнопку
 main_menu_kb = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🔐 Подключить VPN")],
         [KeyboardButton(text="💳 Оплатить")],
         [KeyboardButton(text="📊 Статус подписки")],
+        [KeyboardButton(text="🎰 Рулетка")],  # ← Новая кнопка
         [KeyboardButton(text="❓ Помощь")]
     ],
-    resize_keyboard=True,  # Уменьшить под размер экрана
+    resize_keyboard=True
     one_time_keyboard=False  # Не скрывать после нажатия
 )
+
+# Обработчик кнопки "Рулетка"
+@dp.message(lambda message: message.text == "🎰 Рулетка")
+async def roulette_button(message: types.Message):
+    await cmd_roulette(message)
 
 # 2. Меню выбора 
 tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -211,7 +218,7 @@ async def pay_card(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💳 <b>Оплата банковской картой</b>\n\n"
         "Для оплаты перейдите по ссылке:\n"
-        "🔗 <a href='скоро тут будет ссылка'>Оплатить сейчас</a>\n\n"
+        "🔗 <a href='http://robokassa/'>Оплатить сейчас</a>\n\n"
         "После оплаты настройки придут автоматически."
     )
 
@@ -225,7 +232,7 @@ async def pay_crypto(callback: types.CallbackQuery):
         "• ETH (Ethereum)\n"
         "• USDT (TRC20)\n\n"
         "Для получения реквизитов нажмите:\n"
-        "🔗 <a href='скоро тут что-то будет'>Получить реквизиты</a>"
+        "🔗 <a href='http://robokassa/'>Получить реквизиты</a>"
     )
 
 @dp.callback_query(lambda c: c.data == "pay_phone")
@@ -284,6 +291,41 @@ async def echo_handler(message: types.Message):
         "/PAY - Оплата\n"
         "/podpiska - Статус подписки"
     )
+
+@dp.callback_query(lambda c: c.data == "spin_roulette")
+async def spin_roulette_callback(callback: types.CallbackQuery):
+    user_id = callback.from_user.id
+    user_name = callback.from_user.first_name or "Игрок"
+    
+    # ... проверки ...
+    
+    # 🎰 Эффект "вращения" — отправляем промежуточные сообщения
+    spin_frames = [
+        "🎰 ⚪️ ⚪️ ⚪️",
+        "🎰 🔴 ⚪️ ⚪️",
+        "🎰 ⚪️ 🔵 ⚪️",
+        "🎰 ⚪️ ⚪️ 🟢",
+        "🎰 🔴 🔵 🟢"
+    ]
+    
+    # Отправляем первую анимацию
+    msg = await callback.message.edit_text(
+        f"{spin_frames[0]}\n\nКрутим рулетку... 🍀"
+    )
+    
+    # Имитация задержки
+    for i in range(1, len(spin_frames)):
+        await asyncio.sleep(0.3)  # 300ms
+        await msg.edit_text(
+            f"{spin_frames[i]}\n\nКрутим рулетку... 🍀"
+        )
+    
+    await asyncio.sleep(0.5)
+    
+    # Получаем результат
+    result = spin_roulette()
+    
+    # ... обработка результата ...
 
 async def main():
     print("🚀 Бот запущен!")
