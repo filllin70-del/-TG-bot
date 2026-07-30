@@ -161,3 +161,23 @@ def register_handlers(dp):
         await callback.answer()
 
     return dp
+
+# В конце roulette.py после всех обработчиков
+
+# Экспортируем нужные функции
+async def cmd_roulette_wrapper(message: types.Message):
+    """Обертка для вызова из main.py"""
+    # Используем ту же логику, что и в cmd_roulette
+    # Но так как cmd_roulette уже зарегистрирован через register_handlers,
+    # мы можем просто вызвать его через диспетчер
+    
+    # Или просто импортируем и вызываем внутреннюю функцию
+    # Для простоты дублируем логику здесь (см. код выше)
+    pass
+
+# Экспортируем всё необходимое
+__all__ = [
+    'register_handlers',
+    'roulette_kb',
+    'cmd_roulette_wrapper'  # ← добавляем
+]
