@@ -1,3 +1,12 @@
+# Импорты для рулетки
+from roulette import (
+    cmd_roulette,
+    spin_roulette_callback,
+    roulette_stats,
+    can_spin,
+    spin_roulette,
+    roulette_kb
+)
 # комментарии чисто для себя :)
 import subprocess
 import sys
@@ -20,6 +29,8 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
+from database import Database
+from roulette import register_handlers, roulette_kb
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -33,6 +44,8 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher()
+
+db = Database()
 
 main_menu_kb = ReplyKeyboardMarkup(
     keyboard=[
