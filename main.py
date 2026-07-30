@@ -10,7 +10,7 @@ subprocess.check_call([
     "aiohttp==3.9.1"
 ])
 
-# Теперь импортируем библиотеки
+# библиотеки
 import asyncio
 import os
 from aiogram import Bot, Dispatcher, types
@@ -34,14 +34,12 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-# 1. Главное меню
-# В main_menu_kb добавить кнопку
 main_menu_kb = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🔐 Подключить VPN")],
         [KeyboardButton(text="💳 Оплатить")],
         [KeyboardButton(text="📊 Статус подписки")],
-        [KeyboardButton(text="🎰 Рулетка")],  # ← Новая кнопка
+        [KeyboardButton(text="🎰 Рулетка")],  
         [KeyboardButton(text="❓ Помощь")]
     ],
     resize_keyboard=True,
