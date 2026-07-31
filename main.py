@@ -22,7 +22,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 from database import Database
-from roulette import register_handlers, roulette_kb, cmd_roulette, spin_roulette
+from roulette import register_handlers, roulette_kb
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -36,7 +36,9 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML)
 )
 dp = Dispatcher()
+
 register_handlers(dp)
+
 db = Database()
 
 main_menu_kb = ReplyKeyboardMarkup(
@@ -170,6 +172,8 @@ async def help_button(message: types.Message):
 @dp.message(lambda message: message.text == "🎰 Рулетка")
 async def roulette_button(message: types.Message):
     await cmd_roulette(message)
+
+
 
 @dp.callback_query(lambda c: c.data == "tariff_base")
 async def tariff_base(callback: types.CallbackQuery):
