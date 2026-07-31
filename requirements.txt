@@ -1,9 +1,9 @@
 import asyncio
 import os
+import asyncpg==0.29.0
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from dotenv import load_dotenv
 from aiogram.client.session.aiohttp import AiohttpSession
-from asyncpg==0.29.0
