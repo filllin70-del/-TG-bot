@@ -1,6 +1,5 @@
 import asyncio
 import os
-import asyncpg==0.29.0
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
