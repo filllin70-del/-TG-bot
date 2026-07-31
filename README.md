@@ -1,4 +1,4 @@
-# bot-is-bot
+# bot-TG 
 # VPN Бот для Telegram
 
 ## ⚠️ Внимание!
