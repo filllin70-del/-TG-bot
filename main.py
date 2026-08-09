@@ -22,7 +22,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 from database import Database
-#from roulette import  roulette_kb
+from roulette import register_handlers, roulette_kb
+
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
