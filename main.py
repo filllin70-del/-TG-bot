@@ -233,8 +233,8 @@ async def promo(callback: types.CallbackQuery):
         "🎁 <b>Введите промокод</b>\n\n"
         "Если у вас есть промокод, отправьте его сообщением.\n"
         "Пример: <code>VPN2026</code>",
-            else
-                print("Промокод не действителен")
+        else:
+            print("Промокод не действителен")
         parse_mode=ParseMode.HTML
     )
 
