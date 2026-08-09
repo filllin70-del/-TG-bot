@@ -1,4 +1,3 @@
-
 # комментарии чисто для себя :)
 import subprocess
 import sys
@@ -19,11 +18,11 @@ from aiogram.filters import Command
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from dotenv import load_dotenv
 from database import Database
-from roulette import register_handlers, roulette_kb
 
+# ✅ ПРАВИЛЬНЫЙ ИМПОРТ (только то, что есть в roulette.py)
+from roulette import register_handlers, roulette_kb
 
 load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
@@ -38,28 +37,24 @@ bot = Bot(
 )
 dp = Dispatcher()
 
+# ✅ РЕГИСТРИРУЕМ ОБРАБОТЧИКИ РУЛЕТКИ (ВАЖНО!)
 register_handlers(dp)
 
 db = Database()
+
+# ============ КЛАВИАТУРЫ ============
 
 main_menu_kb = ReplyKeyboardMarkup(
     keyboard=[
         [KeyboardButton(text="🔐 Подключить VPN")],
         [KeyboardButton(text="💳 Оплатить")],
         [KeyboardButton(text="📊 Статус подписки")],
-        [KeyboardButton(text="🎰 Рулетка")],  
         [KeyboardButton(text="❓ Помощь")]
     ],
     resize_keyboard=True,
-    one_time_keyboard=False  # Не скрывать после нажатия
+    one_time_keyboard=False
 )
 
-# Обработчик кнопки "Рулетка"
-@dp.message(lambda message: message.text == "🎰 Рулетка")
-async def roulette_button(message: types.Message):
-    await cmd_roulette(message)
-
-# 2. Меню выбора 
 tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="🌍 1 месяц", callback_data="tariff_base"),
@@ -74,7 +69,6 @@ tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
-# 3. Клавиатура для оплаты
 payment_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="💳 Оплатить картой", callback_data="pay_card"),
@@ -88,7 +82,6 @@ payment_kb = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
-# 4. Клавиатура для поддержки
 support_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="📝 Написать в поддержку", callback_data="support_write"),
@@ -99,21 +92,25 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
     ]
 ])
 
+
+# ============ ОБРАБОТЧИКИ КОМАНД ============
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     name = message.from_user.first_name or "Гость"
     await message.answer(
-        f"👋 Привет, {name} ! "
+        f"👋 Привет, {name}!\n\n"
         "🔒 <b>Ваша приватность - наш приоритет.</b>\n\n"
         "Этот бот предоставляет качественный VPN-доступ в один клик.\n"
         "Мы не храним логи, а наши серверы находятся по всему миру.\n\n"
         "🎯 <b>Чтобы начать:</b>\n"
         "Просто выберите тариф в меню ниже и оплатите подписку.\n"
         "Готовые настройки придут вам сразу после оплаты.\n\n"
-        "Крути рулетку и получи ВПН БЕСПЛАТНО 🙂\n\n"
         "Приятного серфинга! 🌊",
-        reply_markup=main_menu_kb  # Добавляем главное меню
+        reply_markup=main_menu_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.message(Command("help"))
 async def cmd_help(message: types.Message):
@@ -122,59 +119,66 @@ async def cmd_help(message: types.Message):
         "Обращайтесь в техподдержку.\n"
         "⏱ Время ожидания ответа может занять до нескольких часов.\n"
         "Мы обязательно ответим вам! 🙌",
-        reply_markup=support_kb
+        reply_markup=support_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.message(Command("VPN"))
 async def cmd_VPN(message: types.Message):
     await message.answer(
         "🌍 <b>Подключить VPN_GAZ</b>\n\n"
         "Выберите подходящий тариф:",
-        reply_markup=tariffs_kb
+        reply_markup=tariffs_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.message(Command("PAY"))
 async def cmd_PAY(message: types.Message):
     await message.answer(
         "💳 <b>Оплатить VPN</b>\n\n"
         "Выберите удобный способ оплаты:",
-        reply_markup=payment_kb
+        reply_markup=payment_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.message(Command("podpiska"))
 async def cmd_podpiska(message: types.Message):
-    # Пример ответа с информацией о подписке
     await message.answer(
-        "📊 <b>Статус подписки\n\n"
-        "✅ У вас активна подписка: \n"
+        "📊 <b>Статус подписки</b>\n\n"  # ✅ исправлено
+        "✅ У вас активна подписка\n"
         "📅 Действует до: \n"
         "📈 Осталось дней: \n\n"
         "Хотите продлить или сменить тариф?",
-        reply_markup=tariffs_kb
+        reply_markup=tariffs_kb,
+        parse_mode=ParseMode.HTML
     )
 
-# Обработка текстовых кнопок
+
+# ============ ОБРАБОТЧИКИ КНОПОК (Reply) ============
+
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
     await cmd_VPN(message)
+
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
 async def pay_button(message: types.Message):
     await cmd_PAY(message)
 
+
 @dp.message(lambda message: message.text == "📊 Статус подписки")
 async def subscription_button(message: types.Message):
     await cmd_podpiska(message)
+
 
 @dp.message(lambda message: message.text == "❓ Помощь")
 async def help_button(message: types.Message):
     await cmd_help(message)
 
-@dp.message(lambda message: message.text == "🎰 Рулетка")
-async def roulette_button(message: types.Message):
-    await cmd_roulette(message)
-
-
+# ============ ОБРАБОТЧИКИ INLINE-КНОПОК ============
 
 @dp.callback_query(lambda c: c.data == "tariff_base")
 async def tariff_base(callback: types.CallbackQuery):
@@ -186,8 +190,10 @@ async def tariff_base(callback: types.CallbackQuery):
         "🌐 Серверов: <b>5</b>\n"
         "📱 Устройств: <b>2</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
-        reply_markup=payment_kb
+        reply_markup=payment_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "tariff_premium")
 async def tariff_premium(callback: types.CallbackQuery):
@@ -199,8 +205,10 @@ async def tariff_premium(callback: types.CallbackQuery):
         "🌐 Серверов: <b>15</b>\n"
         "📱 Устройств: <b>5</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
-        reply_markup=payment_kb
+        reply_markup=payment_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "tariff_unlimited")
 async def tariff_unlimited(callback: types.CallbackQuery):
@@ -213,8 +221,10 @@ async def tariff_unlimited(callback: types.CallbackQuery):
         "📱 Устройств: <b>10</b>\n"
         "🎁 <b>Безлимитный трафик!</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
-        reply_markup=payment_kb
+        reply_markup=payment_kb,
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "promo")
 async def promo(callback: types.CallbackQuery):
@@ -222,8 +232,12 @@ async def promo(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "🎁 <b>Введите промокод</b>\n\n"
         "Если у вас есть промокод, отправьте его сообщением.\n"
-        "Пример: <code>VPN2026</code>"
+        "Пример: <code>VPN2026</code>",
+            else
+                print("Промокод не действителен")
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "pay_card")
 async def pay_card(callback: types.CallbackQuery):
@@ -232,8 +246,10 @@ async def pay_card(callback: types.CallbackQuery):
         "💳 <b>Оплата банковской картой</b>\n\n"
         "Для оплаты перейдите по ссылке:\n"
         "🔗 <a href='http://robokassa/'>Оплатить сейчас</a>\n\n"
-        "После оплаты настройки придут автоматически."
+        "После оплаты настройки придут автоматически.",
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "pay_crypto")
 async def pay_crypto(callback: types.CallbackQuery):
@@ -245,8 +261,10 @@ async def pay_crypto(callback: types.CallbackQuery):
         "• ETH (Ethereum)\n"
         "• USDT (TRC20)\n\n"
         "Для получения реквизитов нажмите:\n"
-        "🔗 <a href='http://robokassa/'>Получить реквизиты</a>"
+        "🔗 <a href='http://robokassa/'>Получить реквизиты</a>",
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "pay_phone")
 async def pay_phone(callback: types.CallbackQuery):
@@ -255,8 +273,10 @@ async def pay_phone(callback: types.CallbackQuery):
         "📱 <b>Оплата по номеру телефона</b>\n\n"
         "Отправьте ваш номер в формате:\n"
         "<code>+7 999 123 4567</code>\n\n"
-        "Мы пришлем ссылку для оплаты."
+        "Мы пришлем ссылку для оплаты.",
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "support_write")
 async def support_write(callback: types.CallbackQuery):
@@ -265,8 +285,10 @@ async def support_write(callback: types.CallbackQuery):
         "📝 <b>Техническая поддержка</b>\n\n"
         "Опишите вашу проблему одним сообщением.\n"
         "Мы ответим в ближайшее время (до нескольких часов).\n\n"
-        "⏱ <i>Среднее время ответа: 7 дней и 8 ночей (шутка, ответим сразу)</i>"
+        "⏱ <i>Среднее время ответа: 7 дней и 8 ночей (шутка, ответим сразу)</i>",
+        parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "faq")
 async def faq(callback: types.CallbackQuery):
@@ -281,21 +303,25 @@ async def faq(callback: types.CallbackQuery):
         "Да, 3 дня бесплатно при регистрации.\n\n"
         "<b>4. Как отменить подписку?</b>\n"
         "Напишите в поддержку.\n\n"
-        "Для связи с поддержкой нажмите кнопку назад."
+        "Для связи с поддержкой нажмите кнопку назад.",
+        parse_mode=ParseMode.HTML
     )
 
-@dp.callback_query(lambda c: c.data == "back_to_main")
-async def back_to_main(callback: types.CallbackQuery):
-    await callback.answer("↩️ Возврат в главное меню")
-    await callback.message.edit_text(
-        "🔒 <b>Главное меню</b>\n\n"
-        "Выберите действие:",
-        reply_markup=main_menu_kb
-    )
+    @dp.callback_query(lambda c: c.data == "back_to_main")
+    async def back_to_main(callback: types.CallbackQuery):
+        await callback.answer("↩️ Возврат в главное меню")
+
+        # Вариант 1 (простой)
+        await callback.message.delete()
+        await callback.message.answer(
+            "🔒 <b>Главное меню</b>\n\n"
+            "Выберите действие:",
+            reply_markup=main_menu_kb,
+            parse_mode=ParseMode.HTML
+        )
 
 @dp.message()
 async def echo_handler(message: types.Message):
-    # Обработка всех остальных сообщений (включая промокоды)
     await message.answer(
         "Я вас не понял. Используйте кнопки меню или команды:\n"
         "/start - Главное меню\n"
@@ -305,41 +331,10 @@ async def echo_handler(message: types.Message):
         "/podpiska - Статус подписки"
     )
 
-@dp.callback_query(lambda c: c.data == "spin_roulette")
-async def spin_roulette_callback(callback: types.CallbackQuery):
-    user_id = callback.from_user.id
-    user_name = callback.from_user.first_name or "Игрок"
-    
-    
-    # 🎰 Эффект "вращения"
-    spin_frames = [
-        "🎰 ⚪️ ⚪️ ⚪️",
-        "🎰 🔴 ⚪️ ⚪️",
-        "🎰 ⚪️ 🔵 ⚪️",
-        "🎰 ⚪️ ⚪️ 🟢",
-        "🎰 🔴 🔵 🟢"
-    ]
-    
-    # Отправляем первую анимацию
-    msg = await callback.message.edit_text(
-        f"{spin_frames[0]}\n\nКрутим рулетку... 🍀"
-    )
-    
-    # Имитация задержки
-    for i in range(1, len(spin_frames)):
-        await asyncio.sleep(0.3)  # 300ms
-        await msg.edit_text(
-            f"{spin_frames[i]}\n\nКрутим рулетку... 🍀"
-        )
-    
-    await asyncio.sleep(0.5)
-    
-    result = spin_roulette()
-    
-
 async def main():
     print("🚀 Бот запущен!")
     await dp.start_polling(bot)
+
 
 if __name__ == "__main__":
     asyncio.run(main())
