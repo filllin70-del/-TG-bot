@@ -145,7 +145,7 @@ async def cmd_PAY(message: types.Message):
 @dp.message(Command("podpiska"))
 async def cmd_podpiska(message: types.Message):
     await message.answer(
-        "📊 <b>Статус подписки</b>\n\n"  # ✅ исправлено
+        "📊 <b>Статус подписки:</b>\n\n"  # ✅ исправлено
         "✅ У вас активна подписка\n"
         "📅 Действует до: \n"
         "📈 Осталось дней: \n\n"
@@ -160,21 +160,32 @@ async def cmd_podpiska(message: types.Message):
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
     await cmd_VPN(message)
+        user = message.from_user
+        await db.add_use(user.id, user.username, user.first_name)
+        await cmd_VPN(message)
 
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
 async def pay_button(message: types.Message):
     await cmd_PAY(message)
+       user = message.from_user
+        await db.add_user(user.id, user.username, user.first_name)
+        await cmd_PAY(message)
 
 
 @dp.message(lambda message: message.text == "📊 Статус подписки")
 async def subscription_button(message: types.Message):
     await cmd_podpiska(message)
-
+       user = message.from_user
+         await db.add_user(user.id, user.username, user.first_name)
+         await cmd_podpiska(message)
 
 @dp.message(lambda message: message.text == "❓ Помощь")
 async def help_button(message: types.Message):
     await cmd_help(message)
+       user = message.from_user
+         await db.add_user(user.id, user.username, user.first_name)
+         await cmd_help(message)
 
 # ============ ОБРАБОТЧИКИ INLINE-КНОПОК ============
 
