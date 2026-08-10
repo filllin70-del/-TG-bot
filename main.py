@@ -66,10 +66,9 @@ tariffs_kb = InlineKeyboardMarkup(inline_keyboard=[
 payment_kb = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="💳 Оплатить картой", callback_data="pay_card"),
-        InlineKeyboardButton(text="🪙 Оплатить криптой", callback_data="pay_crypto")
     ],
     [
-        InlineKeyboardButton(text="📱 По номеру телефона", callback_data="pay_phone")
+        InlineKeyboardButton(text="📱 Переводом", callback_data="pay_phone")
     ],
     [
         InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_main")
