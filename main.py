@@ -210,10 +210,9 @@ async def cmd_podpiska(message: types.Message):
 
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
+    user = message.from_user
+    await db.add_user(user.id, user.username, user.first_name)
     await cmd_VPN(message)
-        user = message.from_user
-            await db.add_use(user.id, user.username, user.first_name)
-            await cmd_VPN(message)
 
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
