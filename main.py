@@ -34,9 +34,6 @@ bot = Bot(
 )
 dp = Dispatcher()
 
-# ✅ РЕГИСТРИРУЕМ ОБРАБОТЧИКИ РУЛЕТКИ (ВАЖНО!)
-register_handlers(dp)
-
 db = Database()
 
 # ============ КЛАВИАТУРЫ ============
