@@ -369,15 +369,6 @@ async def echo_handler(message: types.Message):
         "/podpiska - Статус подписки"
     )
 
-
-async def main():
-    print("🚀 Бот запущен!")
-    await dp.start_polling(bot)
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
-
 # ============ ЗАПУСК ============
 
 async def main():
@@ -385,13 +376,16 @@ async def main():
     connected = await db.connect()
     
     if connected:
-        print("🚀 Бот запущен с подключением к PostgreSQL!")
+        print("✅ Подключение к PostgreSQL установлено!")
+        print("🚀 Бот запущен с подключением к БД!")
     else:
+        print("❌ Ошибка подключения к БД!")
         print("⚠️ Бот запущен БЕЗ подключения к БД! Проверьте .env файл.")
     
-    print("🚀 Бот запущен!")
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
