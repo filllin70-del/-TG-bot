@@ -90,14 +90,30 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
 # ============ ОБРАБОТЧИКИ КОМАНД ============
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    # ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
     user = message.from_user
-    await db.add_user(user.id, user.username, user.first_name)
+    user_id = user.id
+    username = user.username
+    first_name = user.first_name
     
-    # Приветствие
-    name = user.first_name or "Гость"
+    # ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
+    await db.add_user(user_id, username, first_name)
+    
+    # ✅ ПРОВЕРЯЕМ ПОДПИСКУ
+    subscription = await db.get_active_subscription(user_id)
+    
+    name = first_name or "Гость"
+    
+    # Формируем приветствие в зависимости от статуса подписки
+    if subscription:
+        tariff = subscription['tariff']
+        end_date = subscription['end_date'].strftime('%d.%m.%Y')
+        status_text = f"✅ У вас активна подписка <b>{tariff}</b> до {end_date}"
+    else:
+        status_text = "❌ У вас нет активной подписки"
+    
     await message.answer(
         f"👋 Привет, {name}!\n\n"
+        f"{status_text}\n\n"
         "🔒 <b>Ваша приватность - наш приоритет.</b>\n\n"
         "Этот бот предоставляет качественный VPN-доступ в один клик.\n"
         "Мы не храним логи, а наши серверы находятся по всему миру.\n\n"
@@ -144,15 +160,50 @@ async def cmd_PAY(message: types.Message):
 
 @dp.message(Command("podpiska"))
 async def cmd_podpiska(message: types.Message):
-    await message.answer(
-        "📊 <b>Статус подписки:</b>\n\n"  # ✅ исправлено
-        "✅ У вас активна подписка\n"
-        "📅 Действует до: \n"
-        "📈 Осталось дней: \n\n"
-        "Хотите продлить или сменить тариф?",
-        reply_markup=tariffs_kb,
-        parse_mode=ParseMode.HTML
-    )
+    user_id = message.from_user.id
+    user_name = message.from_user.first_name or "Пользователь"
+    
+    # ✅ ПРОВЕРЯЕМ ПОДПИСКУ В БД
+    subscription = await db.get_active_subscription(user_id)
+    
+    if subscription:
+        # ✅ У пользователя есть активная подписка
+        tariff = subscription['tariff']
+        end_date = subscription['end_date']
+        start_date = subscription['start_date']
+        
+        # Форматируем даты
+        end_date_str = end_date.strftime('%d.%m.%Y')
+        start_date_str = start_date.strftime('%d.%m.%Y')
+        
+        # Считаем оставшиеся дни
+        from datetime import datetime
+        days_left = (end_date - datetime.now()).days
+        days_left = max(0, days_left)  # Чтобы не было отрицательных
+        
+        await message.answer(
+            f"📊 <b>Статус подписки</b>\n\n"
+            f"👤 Пользователь: <b>{user_name}</b>\n"
+            f"✅ Тариф: <b>{tariff}</b>\n"
+            f"📅 Активирована: <b>{start_date_str}</b>\n"
+            f"📅 Действует до: <b>{end_date_str}</b>\n"
+            f"📈 Осталось дней: <b>{days_left}</b>\n\n"
+            f"🔄 Статус: <b>🟢 Активна</b>\n\n"
+            f"Хотите продлить или сменить тариф?",
+            reply_markup=tariffs_kb,
+            parse_mode=ParseMode.HTML
+        )
+    else:
+        # ❌ Нет активной подписки
+        await message.answer(
+            f"📊 <b>Статус подписки</b>\n\n"
+            f"👤 Пользователь: <b>{user_name}</b>\n"
+            f"❌ У вас <b>нет</b> активной подписки\n\n"
+            f"🔄 Статус: <b>🔴 Неактивна</b>\n\n"
+            f"Выберите тариф для подключения:",
+            reply_markup=tariffs_kb,
+            parse_mode=ParseMode.HTML
+        )
 
 
 # ============ ОБРАБОТЧИКИ КНОПОК (Reply) ============
@@ -191,13 +242,15 @@ async def help_button(message: types.Message):
 
 @dp.callback_query(lambda c: c.data == "tariff_base")
 async def tariff_base(callback: types.CallbackQuery):
+        user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Базовый - 1", 30)
+
     await callback.answer("✅ Выбран тариф Базовый")
     await callback.message.edit_text(
         "🌍 <b>Тариф Базовый</b>\n\n"
-        "💰 Цена: <b>--- ₽/мес</b>\n"
+        "💰 Цена: <b>159 ₽./мес</b>\n"
         "📊 Скорость: до <b>50 Мбит/с</b>\n"
-        "🌐 Серверов: <b>5</b>\n"
-        "📱 Устройств: <b>2</b>\n\n"
+        "🌐 Серверов: <b>15</b>\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -206,13 +259,15 @@ async def tariff_base(callback: types.CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "tariff_premium")
 async def tariff_premium(callback: types.CallbackQuery):
-    await callback.answer("✅ Выбран тариф Премиум")
+        user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Стандарт - 3 ", 90)
+
+    await callback.answer("✅ Выбран тариф Стандарт")
     await callback.message.edit_text(
-        "🚀 <b>Тариф Премиум</b>\n\n"
-        "💰 Цена: <b>--- ₽/3 мес</b>\n"
+        "🚀 <b>Тариф стандарт</b>\n\n"
+        "💰 Цена: <b> 359 ₽/3 мес</b>\n"
         "📊 Скорость: до <b>200 Мбит/с</b>\n"
-        "🌐 Серверов: <b>15</b>\n"
-        "📱 Устройств: <b>5</b>\n\n"
+        "🌐 Серверов: <b>25</b>\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -221,13 +276,15 @@ async def tariff_premium(callback: types.CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "tariff_unlimited")
 async def tariff_unlimited(callback: types.CallbackQuery):
-    await callback.answer("✅ Выбран тариф Безлимит")
+            user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Премиум - 12 ", 365)
+
+    await callback.answer("✅ Выбран тариф Премиум")
     await callback.message.edit_text(
         "💎 <b>Тариф Безлимит</b>\n\n"
-        "💰 Цена: <b>--- ₽/год</b>\n"
+        "💰 Цена: <b> 1200 ₽/год</b>\n"
         "📊 Скорость: до <b>500 Мбит/с</b>\n"
-        "🌐 Серверов: <b>30+</b>\n"
-        "📱 Устройств: <b>10</b>\n"
+        "🌐 Серверов: <b>50+</b>\n"
         "🎁 <b>Безлимитный трафик!</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
