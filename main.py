@@ -210,9 +210,10 @@ async def cmd_podpiska(message: types.Message):
 
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
-    user = message.from_user
-    await db.add_user(user.id, user.username, user.first_name)
     await cmd_VPN(message)
+        user = message.from_user
+         await db.add_user(user.id, user.username, user.first_name)
+         await cmd_VPN(message)
 
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
@@ -248,8 +249,7 @@ async def tariff_base(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "🌍 <b>Тариф Базовый</b>\n\n"
         "💰 Цена: <b>159 ₽./мес</b>\n"
-        "📊 Скорость: до <b>50 Мбит/с</b>\n"
-        "🌐 Серверов: <b>15</b>\n"
+        "🌐 Серверов: <b>15+</b>\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -265,8 +265,7 @@ async def tariff_premium(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "🚀 <b>Тариф стандарт</b>\n\n"
         "💰 Цена: <b> 359 ₽/3 мес</b>\n"
-        "📊 Скорость: до <b>200 Мбит/с</b>\n"
-        "🌐 Серверов: <b>25</b>\n"
+        "🌐 Серверов: <b>25+</b>\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -282,9 +281,7 @@ async def tariff_unlimited(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💎 <b>Тариф Безлимит</b>\n\n"
         "💰 Цена: <b> 1200 ₽/год</b>\n"
-        "📊 Скорость: до <b>500 Мбит/с</b>\n"
         "🌐 Серверов: <b>50+</b>\n"
-        "🎁 <b>Безлимитный трафик!</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -313,30 +310,14 @@ async def pay_card(callback: types.CallbackQuery):
         parse_mode=ParseMode.HTML
     )
 
-
-@dp.callback_query(lambda c: c.data == "pay_crypto")
-async def pay_crypto(callback: types.CallbackQuery):
-    await callback.answer("🪙 Оплата криптовалютой")
-    await callback.message.edit_text(
-        "🪙 <b>Оплата криптовалютой</b>\n\n"
-        "Мы принимаем:\n"
-        "• BTC (Bitcoin)\n"
-        "• ETH (Ethereum)\n"
-        "• USDT (TRC20)\n\n"
-        "Для получения реквизитов нажмите:\n"
-        "🔗 <a href='http://robokassa/'>Получить реквизиты</a>",
-        parse_mode=ParseMode.HTML
-    )
-
-
 @dp.callback_query(lambda c: c.data == "pay_phone")
 async def pay_phone(callback: types.CallbackQuery):
-    await callback.answer("📱 Оплата по номеру телефона")
+    await callback.answer("📱 Оплата переводом")
     await callback.message.edit_text(
-        "📱 <b>Оплата по номеру телефона</b>\n\n"
-        "Отправьте ваш номер в формате:\n"
-        "<code>+7 999 123 4567</code>\n\n"
-        "Мы пришлем ссылку для оплаты.",
+        "📱 <b>Оплата переводом</b>\n\n"
+        "Оплата через банковский перевод:\n"
+        "<code>2204311072527493</code>\n\n"
+        "Настройки придут в течение 10 минут после оплаты!",
         parse_mode=ParseMode.HTML
     )
 
@@ -346,9 +327,9 @@ async def support_write(callback: types.CallbackQuery):
     await callback.answer("📝 Связь с поддержкой")
     await callback.message.edit_text(
         "📝 <b>Техническая поддержка</b>\n\n"
-        "Опишите вашу проблему одним сообщением.\n"
-        "Мы ответим в ближайшее время (до нескольких часов).\n\n"
-        "⏱ <i>Среднее время ответа: 7 дней и 8 ночей (шутка, ответим сразу)</i>",
+        "Напишите нам в личные сообщения:\n"
+        "Мы ответим в ближайшее время.\n\n"
+        "⏱ <i>@bufiteer</i>",
         parse_mode=ParseMode.HTML
     )
 
