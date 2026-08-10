@@ -109,11 +109,12 @@ class Database:
                 INSERT INTO subscriptions (user_id, tariff, start_date, end_date, is_active)
                 VALUES ($1, $2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + ($3 || ' days')::INTERVAL, True)
             """, user_id, tariff, days)
+            print(f"✅ Подписка '{tariff}' активирована для пользователя {user_id}")
 
     async def get_active_subscription(self, user_id: int):
         """Проверяет активную подписку"""
         async with self.pool.acquire() as conn:
             return await conn.fetchrow("""
-                SELECT * FROM subscriptions 
-                WHERE user_id = $1 AND is_active = True AND end_date > CURRENT_TIMESTAMP
-            """, user_id)
+            SELECT * FROM subscriptions 
+            WHERE user_id = $1 AND is_active = True AND end_date > CURRENT_TIMESTAMP
+        """, user_id)
