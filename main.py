@@ -212,7 +212,6 @@ async def vpn_button(message: types.Message):
     await cmd_VPN(message)
         user = message.from_user
          await db.add_user(user.id, user.username, user.first_name)
-         await cmd_VPN(message)
 
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
