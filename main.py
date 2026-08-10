@@ -13,6 +13,7 @@ subprocess.check_call([
 # библиотеки
 import asyncio
 import os
+from datetime import datetime
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.enums import ParseMode
@@ -87,6 +88,7 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
 
 
 # ============ ОБРАБОТЧИКИ КОМАНД ============
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     user = message.from_user
@@ -94,15 +96,11 @@ async def cmd_start(message: types.Message):
     username = user.username
     first_name = user.first_name
     
-    # ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
     await db.add_user(user_id, username, first_name)
-    
-    # ✅ ПРОВЕРЯЕМ ПОДПИСКУ
     subscription = await db.get_active_subscription(user_id)
     
     name = first_name or "Гость"
     
-    # Формируем приветствие в зависимости от статуса подписки
     if subscription:
         tariff = subscription['tariff']
         end_date = subscription['end_date'].strftime('%d.%m.%Y')
@@ -162,23 +160,18 @@ async def cmd_podpiska(message: types.Message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name or "Пользователь"
     
-    # ✅ ПРОВЕРЯЕМ ПОДПИСКУ В БД
     subscription = await db.get_active_subscription(user_id)
     
     if subscription:
-        # ✅ У пользователя есть активная подписка
         tariff = subscription['tariff']
         end_date = subscription['end_date']
         start_date = subscription['start_date']
         
-        # Форматируем даты
         end_date_str = end_date.strftime('%d.%m.%Y')
         start_date_str = start_date.strftime('%d.%m.%Y')
         
-        # Считаем оставшиеся дни
-        from datetime import datetime
         days_left = (end_date - datetime.now()).days
-        days_left = max(0, days_left)  # Чтобы не было отрицательных
+        days_left = max(0, days_left)
         
         await message.answer(
             f"📊 <b>Статус подписки</b>\n\n"
@@ -193,7 +186,6 @@ async def cmd_podpiska(message: types.Message):
             parse_mode=ParseMode.HTML
         )
     else:
-        # ❌ Нет активной подписки
         await message.answer(
             f"📊 <b>Статус подписки</b>\n\n"
             f"👤 Пользователь: <b>{user_name}</b>\n"
@@ -209,45 +201,45 @@ async def cmd_podpiska(message: types.Message):
 
 @dp.message(lambda message: message.text == "🔐 Подключить VPN")
 async def vpn_button(message: types.Message):
-    await cmd_VPN(message)
     user = message.from_user
     await db.add_user(user.id, user.username, user.first_name)
+    await cmd_VPN(message)
 
 
 @dp.message(lambda message: message.text == "💳 Оплатить")
 async def pay_button(message: types.Message):
+    user = message.from_user
+    await db.add_user(user.id, user.username, user.first_name)
     await cmd_PAY(message)
-       user = message.from_user
-        await db.add_user(user.id, user.username, user.first_name)
-        await cmd_PAY(message)
 
 
 @dp.message(lambda message: message.text == "📊 Статус подписки")
 async def subscription_button(message: types.Message):
+    user = message.from_user
+    await db.add_user(user.id, user.username, user.first_name)
     await cmd_podpiska(message)
-       user = message.from_user
-         await db.add_user(user.id, user.username, user.first_name)
-         await cmd_podpiska(message)
+
 
 @dp.message(lambda message: message.text == "❓ Помощь")
 async def help_button(message: types.Message):
+    user = message.from_user
+    await db.add_user(user.id, user.username, user.first_name)
     await cmd_help(message)
-       user = message.from_user
-         await db.add_user(user.id, user.username, user.first_name)
-         await cmd_help(message)
+
 
 # ============ ОБРАБОТЧИКИ INLINE-КНОПОК ============
 
 @dp.callback_query(lambda c: c.data == "tariff_base")
 async def tariff_base(callback: types.CallbackQuery):
-        user_id = callback.from_user.id
-    await db.add_subscription(user_id, "Базовый - 1", 30)
-
+    user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Базовый - 1 месяц", 30)
+    
     await callback.answer("✅ Выбран тариф Базовый")
     await callback.message.edit_text(
         "🌍 <b>Тариф Базовый</b>\n\n"
-        "💰 Цена: <b>159 ₽./мес</b>\n"
+        "💰 Цена: <b>159 ₽/мес</b>\n"
         "🌐 Серверов: <b>15+</b>\n"
+        "📱 Устройств: <b>2</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -256,14 +248,15 @@ async def tariff_base(callback: types.CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "tariff_premium")
 async def tariff_premium(callback: types.CallbackQuery):
-        user_id = callback.from_user.id
-    await db.add_subscription(user_id, "Стандарт - 3 ", 90)
-
+    user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Стандарт - 3 месяца", 90)
+    
     await callback.answer("✅ Выбран тариф Стандарт")
     await callback.message.edit_text(
-        "🚀 <b>Тариф стандарт</b>\n\n"
-        "💰 Цена: <b> 359 ₽/3 мес</b>\n"
+        "🚀 <b>Тариф Стандарт</b>\n\n"
+        "💰 Цена: <b>359 ₽/3 мес</b>\n"
         "🌐 Серверов: <b>25+</b>\n"
+        "📱 Устройств: <b>5</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -272,14 +265,16 @@ async def tariff_premium(callback: types.CallbackQuery):
 
 @dp.callback_query(lambda c: c.data == "tariff_unlimited")
 async def tariff_unlimited(callback: types.CallbackQuery):
-            user_id = callback.from_user.id
-    await db.add_subscription(user_id, "Премиум - 12 ", 365)
-
+    user_id = callback.from_user.id
+    await db.add_subscription(user_id, "Премиум - 12 месяцев", 365)
+    
     await callback.answer("✅ Выбран тариф Премиум")
     await callback.message.edit_text(
-        "💎 <b>Тариф Безлимит</b>\n\n"
-        "💰 Цена: <b> 1200 ₽/год</b>\n"
+        "💎 <b>Тариф Премиум</b>\n\n"
+        "💰 Цена: <b>1200 ₽/год</b>\n"
         "🌐 Серверов: <b>50+</b>\n"
+        "📱 Устройств: <b>10</b>\n"
+        "🎁 <b>Безлимитный трафик!</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
         reply_markup=payment_kb,
         parse_mode=ParseMode.HTML
@@ -307,6 +302,7 @@ async def pay_card(callback: types.CallbackQuery):
         "После оплаты настройки придут автоматически.",
         parse_mode=ParseMode.HTML
     )
+
 
 @dp.callback_query(lambda c: c.data == "pay_phone")
 async def pay_phone(callback: types.CallbackQuery):
@@ -349,18 +345,18 @@ async def faq(callback: types.CallbackQuery):
         parse_mode=ParseMode.HTML
     )
 
-    @dp.callback_query(lambda c: c.data == "back_to_main")
-    async def back_to_main(callback: types.CallbackQuery):
-        await callback.answer("↩️ Возврат в главное меню")
 
-        # Вариант 1 (простой)
-        await callback.message.delete()
-        await callback.message.answer(
-            "🔒 <b>Главное меню</b>\n\n"
-            "Выберите действие:",
-            reply_markup=main_menu_kb,
-            parse_mode=ParseMode.HTML
-        )
+@dp.callback_query(lambda c: c.data == "back_to_main")
+async def back_to_main(callback: types.CallbackQuery):
+    await callback.answer("↩️ Возврат в главное меню")
+    await callback.message.delete()
+    await callback.message.answer(
+        "🔒 <b>Главное меню</b>\n\n"
+        "Выберите действие:",
+        reply_markup=main_menu_kb,
+        parse_mode=ParseMode.HTML
+    )
+
 
 @dp.message()
 async def echo_handler(message: types.Message):
@@ -372,6 +368,7 @@ async def echo_handler(message: types.Message):
         "/PAY - Оплата\n"
         "/podpiska - Статус подписки"
     )
+
 
 async def main():
     print("🚀 Бот запущен!")
