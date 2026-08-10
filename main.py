@@ -377,3 +377,21 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+# ============ ЗАПУСК ============
+
+async def main():
+    print("🔄 Проверка подключения к БД...")
+    connected = await db.connect()
+    
+    if connected:
+        print("🚀 Бот запущен с подключением к PostgreSQL!")
+    else:
+        print("⚠️ Бот запущен БЕЗ подключения к БД! Проверьте .env файл.")
+    
+    print("🚀 Бот запущен!")
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
