@@ -88,10 +88,14 @@ support_kb = InlineKeyboardMarkup(inline_keyboard=[
 
 
 # ============ ОБРАБОТЧИКИ КОМАНД ============
-
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    name = message.from_user.first_name or "Гость"
+    # ✅ СОХРАНЯЕМ ПОЛЬЗОВАТЕЛЯ
+    user = message.from_user
+    await db.add_user(user.id, user.username, user.first_name)
+    
+    # Приветствие
+    name = user.first_name or "Гость"
     await message.answer(
         f"👋 Привет, {name}!\n\n"
         "🔒 <b>Ваша приватность - наш приоритет.</b>\n\n"
