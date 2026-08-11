@@ -38,7 +38,7 @@ class Database:
                 min_size=1,
                 max_size=10,
                 timeout=30,
-                ssl='require'  # ← ЯВНО УКАЗЫВАЕМ SSL!
+                ssl=fulse  # ← ЯВНО УКАЗЫВАЕМ SSL!
             )
             print("✅ Подключение к PostgreSQL установлено!")
             await self.create_tables()
