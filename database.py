@@ -1,6 +1,7 @@
 import asyncpg
 import os
 from dotenv import load_dotenv
+import traceback  # ← добавляем
 
 load_dotenv()
 
@@ -9,7 +10,6 @@ class Database:
         self.pool = None
 
     async def connect(self):
-        """Создает пул соединений с PostgreSQL"""
         try:
             host = os.getenv("DB_HOST")
             port = os.getenv("DB_PORT", "5432")
@@ -17,8 +17,8 @@ class Database:
             user = os.getenv("DB_USER")
             password = os.getenv("DB_PASSWORD")
             
-            # Проверяем переменные
             print(f"🔍 DB_HOST: {host}")
+            print(f"🔍 DB_PORT: {port}")
             print(f"🔍 DB_NAME: {database}")
             print(f"🔍 DB_USER: {user}")
             print(f"🔍 DB_PASSWORD: {'SET' if password else 'NOT SET'}")
@@ -37,15 +37,20 @@ class Database:
                 password=password,
                 min_size=1,
                 max_size=10,
-                timeout=30
+                timeout=30,
+                ssl='require'  # ← ЯВНО УКАЗЫВАЕМ SSL!
             )
             print("✅ Подключение к PostgreSQL установлено!")
-            
             await self.create_tables()
             return True
             
         except Exception as e:
-            print(f"❌ Ошибка подключения к БД: {e}")
+            # Показываем ПОЛНУЮ ошибку
+            print(f"❌ ОШИБКА ПОДКЛЮЧЕНИЯ:")
+            print(f"   Тип: {type(e).__name__}")
+            print(f"   Сообщение: {e}")
+            print(f"   Полный traceback:")
+            traceback.print_exc()
             return False
 
     async def create_tables(self):
