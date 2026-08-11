@@ -237,7 +237,7 @@ async def tariff_base(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Базовый")
     await callback.message.edit_text(
         "🌍 <b>Тариф Базовый</b>\n\n"
-        "💰 Цена: <b>159 ₽/мес</b>\n"
+        "💰 Цена: <b>159 руб. 1 месяц</b>\n"
         "🌐 Серверов: <b>15+</b>\n"
         "📱 Устройств: <b>2</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
@@ -254,7 +254,7 @@ async def tariff_premium(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Стандарт")
     await callback.message.edit_text(
         "🚀 <b>Тариф Стандарт</b>\n\n"
-        "💰 Цена: <b>359 ₽/3 мес</b>\n"
+        "💰 Цена: <b>359 руб. 3 месяца</b>\n"
         "🌐 Серверов: <b>25+</b>\n"
         "📱 Устройств: <b>5</b>\n\n"
         "Для оплаты нажмите кнопку ниже:",
@@ -271,7 +271,7 @@ async def tariff_unlimited(callback: types.CallbackQuery):
     await callback.answer("✅ Выбран тариф Премиум")
     await callback.message.edit_text(
         "💎 <b>Тариф Премиум</b>\n\n"
-        "💰 Цена: <b>1200 ₽/год</b>\n"
+        "💰 Цена: <b>1200 ₽уб. 12 месяцев.</b>\n"
         "🌐 Серверов: <b>50+</b>\n"
         "📱 Устройств: <b>10</b>\n"
         "🎁 <b>Безлимитный трафик!</b>\n\n"
@@ -298,7 +298,7 @@ async def pay_card(callback: types.CallbackQuery):
     await callback.message.edit_text(
         "💳 <b>Оплата банковской картой</b>\n\n"
         "Для оплаты перейдите по ссылке:\n"
-        "🔗 <a href='http://robokassa/'>Оплатить сейчас</a>\n\n"
+        "🔗 <a href='http://robokassa/'>Оплатить</a>\n\n"
         "После оплаты настройки придут автоматически.",
         parse_mode=ParseMode.HTML
     )
